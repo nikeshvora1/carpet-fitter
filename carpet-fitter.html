@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahavir Decor — Carpet Fitter</title>
+<style>
+  :root{
+    --bg:#f5f3ee; --panel:#ffffff; --ink:#27241d; --muted:#7a7565;
+    --line:#e3ddd0; --accent:#9a3b2e; --accent2:#c0703f; --ok:#2f7d4f; --warn:#b5852a;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:linear-gradient(120deg,#7d2e23,#a8492f);color:#fff;padding:18px 24px;box-shadow:var(--shadow)}
+  header h1{margin:0;font-size:20px;letter-spacing:.3px}
+  header p{margin:4px 0 0;opacity:.85;font-size:13px}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+  .panel h2{margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .panel .hint{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;font-weight:600;padding:4px 6px}
+  td{padding:3px 4px}
+  input[type=text],input[type=number]{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 8px;font:inherit;background:#fbfaf7}
+  input:focus{outline:2px solid var(--accent2);outline-offset:-1px;border-color:transparent}
+  td.num input{text-align:right}
+  td.name input{min-width:90px}
+  .chk{display:flex;justify-content:center;align-items:center}
+  .swatch{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,.15);vertical-align:-2px}
+  button{font:inherit;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+  .btn-add{background:#efe9dd;color:var(--ink);font-size:13px;padding:6px 10px;margin-top:8px}
+  .btn-add:hover{background:#e6dfd0}
+  .btn-del{background:transparent;color:var(--muted);font-size:18px;line-height:1;padding:2px 8px}
+  .btn-del:hover{color:var(--accent)}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0}
+  .btn-go{background:var(--accent);color:#fff;font-size:16px;padding:11px 26px}
+  .btn-go:hover{background:#84291e}
+  .btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  .btn-ghost:hover{background:#f0eadf}
+  label.unit{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  select{font:inherit;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fbfaf7}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:8px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px;box-shadow:var(--shadow)}
+  .stat .v{font-size:22px;font-weight:700}
+  .stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+  .stat.bad .v{color:var(--accent)}
+  .stat.good .v{color:var(--ok)}
+  .sheets{display:flex;flex-wrap:wrap;gap:18px;margin-top:8px}
+  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;box-shadow:var(--shadow)}
+  .sheet h4{margin:0 0 2px;font-size:14px}
+  .sheet .meta{font-size:12px;color:var(--muted);margin:0 0 8px}
+  svg{display:block;background:#fbfaf7;border-radius:6px}
+  .piece-label{font:600 11px sans-serif;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.25);stroke-width:2px}
+  .dim-label{font:10px sans-serif;fill:rgba(255,255,255,.85)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  .legend span{font-size:12.5px;display:flex;align-items:center;gap:5px}
+  .alert{background:#fdf1ee;border:1px solid #e7b9af;color:#7d2e23;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+  .alert.ok{background:#eef6f0;border-color:#bcd9c6;color:#1f5d3a}
+  .cutlist{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  .cutlist th,.cutlist td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+  .cutlist td.r{text-align:right}
+  details{margin-top:18px}
+  summary{cursor:pointer;font-weight:600;color:var(--accent)}
+  .seam-flag{font-size:10px;color:var(--warn);font-weight:700}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}
+  @media print{header,.controls,.btn-add,.btn-del,.inputs{display:none}.panel{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧶 Mahavir Decor — Carpet Fitter</h1>
+  <p>Enter the carpets you have and the floor areas to cover. The engine computes how to cut &amp; lay them with the least waste and fewest seams.</p>
+</header>
+
+<div class="wrap">
+  <div class="controls inputs">
+    <label class="unit">Units:
+      <select id="unit">
+        <option value="ft">feet</option>
+        <option value="m">metres</option>
+        <option value="cm">cm</option>
+        <option value="in">inches</option>
+      </select>
+    </label>
+    <button class="btn-ghost" id="demoBtn">Load example</button>
+    <button class="btn-ghost" id="clearBtn">Clear all</button>
+  </div>
+
+  <div class="grid2 inputs">
+    <div class="panel">
+      <h2>📦 Carpets you have <span style="font-weight:400;color:var(--muted);font-size:13px">(stock to cut from)</span></h2>
+      <p class="hint">Width × Length of each carpet roll/piece. Untick “Rotate?” for directional pile or patterned carpet that must keep its direction.</p>
+      <table id="stockTable">
+        <thead><tr><th></th><th>Name</th><th>Width</th><th>Length</th><th>Qty</th><th>Rotate?</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <button class="btn-add" id="addStock">+ Add carpet</button>
+    </div>
+
+    <div class="panel">
+      <h2>📐 Areas to cover <span style="font-weight:400;color:var(--muted);font-size:13px">(rooms / floors)</span></h2>
+      <p class="hint">Width × Length of each area needing carpet. Set Qty for several identical areas.</p>
+      <table id="needTable">
+        <thead><tr><th></th><th>Name</th><th>Width</th><th>Length</th><th>Qty</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <button class="btn-add" id="addNeed">+ Add area</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-go" id="computeBtn">Compute layout →</button>
+    <button class="btn-ghost" id="printBtn">🖨 Print plan</button>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<footer>Mahavir Decor Carpet Fitter · runs entirely on your computer · data saved in this browser</footer>
+
+<script>
+"use strict";
+/* ---------------------- palette for rooms ---------------------- */
+const PALETTE = ["#c0703f","#3f7fb0","#5a8a4a","#9a5fb0","#c0a13f","#3fa5a0","#b04f6e","#6b6fb0","#a0703f","#4a8a7a","#b08a3f","#8a4f9a"];
+// distinct palette for carpets (used in the room view, by carpet source)
+const CARPET_PALETTE = ["#2f6f8f","#7a9c3f","#b06a3f","#8a5fa0","#3f8f7a","#9c7a3f","#6f5fa0","#a04f5f","#4f7a9c","#7a8f4f"];
+let stock = [];   // {name,w,l,qty,rot}
+let needs = [];   // {name,w,l,qty}
+
+/* ---------------------- persistence ---------------------- */
+function save(){ localStorage.setItem("mdcf", JSON.stringify({unit:unitSel.value, stock, needs})); }
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem("mdcf"));
+    if(d){ unitSel.value=d.unit||"ft"; stock=d.stock||[]; needs=d.needs||[]; return true; }
+  }catch(e){}
+  return false;
+}
+
+/* ---------------------- DOM refs ---------------------- */
+const unitSel=document.getElementById("unit");
+const stockBody=document.querySelector("#stockTable tbody");
+const needBody=document.querySelector("#needTable tbody");
+
+/* ---------------------- row rendering ---------------------- */
+function num(v){ const n=parseFloat(v); return isFinite(n)&&n>0?n:0; }
+
+function renderStock(){
+  stockBody.innerHTML="";
+  stock.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><span class="swatch" style="background:${PALETTE[i%PALETTE.length]};opacity:.35"></span></td>
+      <td class="name"><input type="text" value="${esc(r.name)}" data-k="name"></td>
+      <td class="num"><input type="number" min="0" step="any" value="${r.w||""}" data-k="w"></td>
+      <td class="num"><input type="number" min="0" step="any" value="${r.l||""}" data-k="l"></td>
+      <td class="num" style="width:60px"><input type="number" min="1" step="1" value="${r.qty||1}" data-k="qty"></td>
+      <td class="chk"><input type="checkbox" ${r.rot?"checked":""} data-k="rot"></td>
+      <td><button class="btn-del" title="remove">×</button></td>`;
+    tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",e=>{
+      const k=e.target.dataset.k;
+      r[k]= k==="rot"? e.target.checked : (k==="name"? e.target.value : num(e.target.value));
+      save();
+    }));
+    tr.querySelector(".btn-del").addEventListener("click",()=>{stock.splice(i,1);renderStock();save();});
+    stockBody.appendChild(tr);
+  });
+}
+function renderNeed(){
+  needBody.innerHTML="";
+  needs.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><span class="swatch" style="background:${PALETTE[i%PALETTE.length]}"></span></td>
+      <td class="name"><input type="text" value="${esc(r.name)}" data-k="name"></td>
+      <td class="num"><input type="number" min="0" step="any" value="${r.w||""}" data-k="w"></td>
+      <td class="num"><input type="number" min="0" step="any" value="${r.l||""}" data-k="l"></td>
+      <td class="num" style="width:60px"><input type="number" min="1" step="1" value="${r.qty||1}" data-k="qty"></td>
+      <td><button class="btn-del" title="remove">×</button></td>`;
+    tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",e=>{
+      const k=e.target.dataset.k;
+      r[k]= k==="name"? e.target.value : num(e.target.value);
+      save();
+    }));
+    tr.querySelector(".btn-del").addEventListener("click",()=>{needs.splice(i,1);renderNeed();save();});
+    needBody.appendChild(tr);
+  });
+}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+
+document.getElementById("addStock").onclick=()=>{stock.push({name:"Carpet "+(stock.length+1),w:"",l:"",qty:1,rot:true});renderStock();save();};
+document.getElementById("addNeed").onclick=()=>{needs.push({name:"Room "+(needs.length+1),w:"",l:"",qty:1});renderNeed();save();};
+unitSel.onchange=save;
+document.getElementById("clearBtn").onclick=()=>{if(confirm("Clear all carpets and areas?")){stock=[];needs=[];renderStock();renderNeed();document.getElementById("results").innerHTML="";save();}};
+document.getElementById("printBtn").onclick=()=>window.print();
+document.getElementById("demoBtn").onclick=()=>{
+  stock=[
+    {name:"Roll A (beige)",w:12,l:30,qty:1,rot:true},
+    {name:"Roll B (grey)", w:12,l:18,qty:1,rot:true},
+    {name:"Remnant C",     w:8, l:10,qty:2,rot:true},
+    {name:"Patterned D",   w:13,l:20,qty:1,rot:false},
+  ];
+  needs=[
+    {name:"Living room",w:12,l:16,qty:1},
+    {name:"Bedroom",    w:10,l:12,qty:2},
+    {name:"Hallway",    w:4, l:18,qty:1},
+    {name:"Office",     w:11,l:13,qty:1},
+  ];
+  unitSel.value="ft";
+  renderStock();renderNeed();save();
+};
+
+/* ===================================================================
+   ENGINE — 2D cutting stock
+   bins  = carpets (what we cut from)
+   items = room areas (what we must produce); placed whole if possible,
+           else split into seamed pieces (guillotine corner fill).
+   Free space tracked per bin with the MaxRects algorithm.
+=================================================================== */
+const EPS=1e-6;
+
+function makeBins(){
+  const bins=[];
+  stock.forEach((c,di)=>{
+    if(c.w<=0||c.l<=0) return;
+    const q=Math.max(1,Math.round(c.qty||1));
+    for(let k=0;k<q;k++){
+      bins.push({
+        defIndex:di,
+        label:c.name + (q>1?` #${k+1}`:""),
+        W:c.w, H:c.l, rot:!!c.rot,
+        free:[{x:0,y:0,w:c.w,h:c.l}],
+        placed:[]   // {x,y,w,h,room,color,seam}
+      });
+    }
+  });
+  return bins;
+}
+function makeItems(){
+  const items=[];
+  needs.forEach((r,di)=>{
+    if(r.w<=0||r.l<=0) return;
+    const q=Math.max(1,Math.round(r.qty||1));
+    for(let k=0;k<q;k++){
+      items.push({
+        defIndex:di,
+        label:r.name + (q>1?` #${k+1}`:""),
+        w:r.w, h:r.l,
+        color:PALETTE[di%PALETTE.length],
+        area:r.w*r.l
+      });
+    }
+  });
+  // largest first
+  items.sort((a,b)=>b.area-a.area);
+  return items;
+}
+
+// split bin free rects after placing used rect R (MaxRects)
+function placeIntoBin(bin,x,y,w,h,meta){
+  bin.placed.push(Object.assign({x,y,w,h},meta));
+  const R={x,y,w,h};
+  const next=[];
+  for(const F of bin.free){
+    if(R.x>=F.x+F.w-EPS||R.x+R.w<=F.x+EPS||R.y>=F.y+F.h-EPS||R.y+R.h<=F.y+EPS){
+      next.push(F); continue; // no overlap
+    }
+    if(R.x>F.x+EPS)               next.push({x:F.x,y:F.y,w:R.x-F.x,h:F.h});
+    if(R.x+R.w<F.x+F.w-EPS)       next.push({x:R.x+R.w,y:F.y,w:F.x+F.w-(R.x+R.w),h:F.h});
+    if(R.y>F.y+EPS)               next.push({x:F.x,y:F.y,w:F.w,h:R.y-F.y});
+    if(R.y+R.h<F.y+F.h-EPS)       next.push({x:F.x,y:R.y+R.h,w:F.w,h:F.y+F.h-(R.y+R.h)});
+  }
+  // prune contained
+  bin.free=next.filter((a,i)=>!next.some((b,j)=>i!==j&&
+    a.x>=b.x-EPS&&a.y>=b.y-EPS&&a.x+a.w<=b.x+b.w+EPS&&a.y+a.h<=b.y+b.h+EPS&&
+    (a.w*a.h<b.w*b.h-EPS||(Math.abs(a.w*a.h-b.w*b.h)<EPS&&i>j))
+  ));
+}
+
+// find best whole placement of item (w,h) across bins (Best Area Fit)
+function findWhole(bins,w,h){
+  let best=null;
+  for(const bin of bins){
+    for(const F of bin.free){
+      const orients=[[w,h,false]];
+      if(bin.rot) orients.push([h,w,true]);
+      for(const [pw,ph,rotd] of orients){
+        if(pw<=F.w+EPS&&ph<=F.h+EPS){
+          const leftover=F.w*F.h-pw*ph;
+          const shortFit=Math.min(F.w-pw,F.h-ph);
+          const score=leftover*1e6+shortFit; // area fit, tie-break short side
+          if(!best||score<best.score)
+            best={bin,F,pw,ph,rotd,score};
+        }
+      }
+    }
+  }
+  return best;
+}
+
+// greedily cover a region (rw,rh) of a room using offcuts -> seamed pieces
+function coverRegion(bins,rw,rh,item){
+  const queue=[{x:0,y:0,w:rw,h:rh}];
+  let coveredArea=0;
+  while(queue.length){
+    const reg=queue.pop();
+    if(reg.w<=EPS||reg.h<=EPS) continue;
+    // pick free rect giving the largest piece covering this region's corner
+    let pick=null;
+    for(const bin of bins){
+      for(const F of bin.free){
+        // orientation A: room-axes aligned with carpet axes
+        {const pw=Math.min(reg.w,F.w), ph=Math.min(reg.h,F.h);
+         const a=pw*ph; if(a>EPS&&(!pick||a>pick.area)) pick={bin,F,pw,ph,cw:pw,ch:ph,area:a};}
+        // orientation B: piece rotated 90° (only if carpet rotatable)
+        if(bin.rot){const pw=Math.min(reg.w,F.h), ph=Math.min(reg.h,F.w);
+         const a=pw*ph; if(a>EPS&&(!pick||a>pick.area)) pick={bin,F,pw,ph,cw:ph,ch:pw,area:a};}
+      }
+    }
+    if(!pick) return {covered:coveredArea}; // ran out of carpet
+    placeIntoBin(pick.bin,pick.F.x,pick.F.y,pick.cw,pick.ch,
+      {room:item.label,color:item.color,seam:true,roomW:pick.pw,roomH:pick.ph,rx:reg.x,ry:reg.y});
+    coveredArea+=pick.pw*pick.ph;
+    // remaining L-shape -> right strip + bottom strip
+    if(reg.w-pick.pw>EPS) queue.push({x:reg.x+pick.pw,y:reg.y,w:reg.w-pick.pw,h:pick.ph});
+    if(reg.h-pick.ph>EPS) queue.push({x:reg.x,y:reg.y+pick.ph,w:reg.w,h:reg.h-pick.ph});
+  }
+  return {covered:coveredArea};
+}
+
+function compute(){
+  const bins=makeBins();
+  const items=makeItems();
+  if(bins.length===0||items.length===0){
+    renderResults(null,"Add at least one carpet and one area, then compute.");
+    return;
+  }
+  const report={whole:0,seamed:0,unfilled:[]};
+  for(const it of items){
+    const w=findWhole(bins,it.w,it.h);
+    if(w){
+      placeIntoBin(w.bin,w.F.x,w.F.y,w.pw,w.ph,
+        {room:it.label,color:it.color,seam:false,roomW:it.w,roomH:it.h,rx:0,ry:0,rotd:w.rotd});
+      report.whole++;
+    }else{
+      const res=coverRegion(bins,it.w,it.h,it);
+      const need=it.w*it.h;
+      if(res.covered>=need-1e-3) report.seamed++;
+      else report.unfilled.push({label:it.label,short:(need-res.covered)});
+    }
+  }
+  renderResults({bins,items,report},null);
+  save();
+}
+
+/* ---------------------- results rendering ---------------------- */
+function fmt(n){ return (Math.round(n*100)/100).toLocaleString(); }
+
+function renderResults(data,msg){
+  const el=document.getElementById("results");
+  if(msg){ el.innerHTML=`<div class="alert">${msg}</div>`; return; }
+  const {bins,items,report}=data;
+  const u=unitSel.value;
+  const usedBins=bins.filter(b=>b.placed.length);
+  const totalStock=bins.reduce((s,b)=>s+b.W*b.H,0);
+  const needArea=items.reduce((s,i)=>s+i.area,0);
+  const placedArea=usedBins.reduce((s,b)=>s+b.placed.reduce((t,p)=>t+p.w*p.h,0),0);
+  const usedStockArea=usedBins.reduce((s,b)=>s+b.W*b.H,0);
+  const offcutWaste=usedStockArea-placedArea;
+  const wastePct=usedStockArea>0?(offcutWaste/usedStockArea*100):0;
+  const unusedBins=bins.filter(b=>!b.placed.length);
+
+  let html="";
+  if(report.unfilled.length){
+    html+=`<div class="alert"><b>⚠ Not enough carpet.</b> Short by area for: `+
+      report.unfilled.map(x=>`${esc(x.label)} (−${fmt(x.short)} ${u}²)`).join(", ")+
+      `. Add more stock or reduce areas.</div>`;
+  }else{
+    html+=`<div class="alert ok"><b>✓ All areas can be covered.</b> ${report.whole} laid as a single piece, ${report.seamed} need seaming.</div>`;
+  }
+
+  html+=`<div class="stats">
+    <div class="stat"><div class="v">${fmt(needArea)}</div><div class="k">Area needed (${u}²)</div></div>
+    <div class="stat"><div class="v">${fmt(usedStockArea)}</div><div class="k">Carpet used (${u}²)</div></div>
+    <div class="stat ${wastePct>25?'bad':'good'}"><div class="v">${fmt(wastePct)}%</div><div class="k">Offcut waste</div></div>
+    <div class="stat"><div class="v">${fmt(offcutWaste)}</div><div class="k">Waste area (${u}²)</div></div>
+    <div class="stat ${report.seamed?'':'good'}"><div class="v">${report.seamed}</div><div class="k">Rooms seamed</div></div>
+  </div>`;
+
+  // ---- ROOM VIEW: each room, showing which carpet(s) fill it ----
+  const roomMap={};
+  items.forEach(it=>roomMap[it.label]={item:it,pieces:[]});
+  bins.forEach(b=>b.placed.forEach(p=>{
+    if(roomMap[p.room]) roomMap[p.room].pieces.push(Object.assign({},p,{carpetIndex:b.defIndex,carpetLabel:b.label}));
+  }));
+  const usedCarpetIdx=[...new Set(bins.filter(b=>b.placed.length).map(b=>b.defIndex))];
+  html+=`<h3 style="margin:22px 0 2px">🏠 How each room will look</h3>`;
+  html+=`<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px">Coloured by which carpet each part is cut from. White lines are seams; grey hatching is uncovered.</p>`;
+  html+=`<div class="legend">`+usedCarpetIdx.map(ci=>
+    `<span><span class="swatch" style="background:${CARPET_PALETTE[ci%CARPET_PALETTE.length]}"></span>${esc(stock[ci].name)}</span>`).join("")+`</div>`;
+  html+=`<div class="sheets">`;
+  for(const it of items){ html+=drawRoom(roomMap[it.label],u); }
+  html+=`</div>`;
+
+  // ---- CUTTING SHEETS: each carpet, showing how to cut it ----
+  html+=`<h3 style="margin:26px 0 2px">✂️ How to cut each carpet</h3>`;
+  html+=`<p style="color:var(--muted);font-size:12.5px;margin:0 0 8px">Coloured by destination room. Dashed areas are leftover offcuts.</p>`;
+  html+=`<div class="legend">`+items.filter((v,i,a)=>a.findIndex(x=>x.defIndex===v.defIndex)===i)
+    .map(i=>`<span><span class="swatch" style="background:${i.color}"></span>${esc(needs[i.defIndex].name)}</span>`).join("")+`</div>`;
+  html+=`<div class="sheets">`;
+  for(const b of usedBins){
+    const used=b.placed.reduce((t,p)=>t+p.w*p.h,0);
+    const util=(used/(b.W*b.H)*100);
+    html+=drawSheet(b,util,u);
+  }
+  html+=`</div>`;
+
+  if(unusedBins.length){
+    html+=`<p style="color:var(--muted);font-size:13px;margin-top:14px"><b>Untouched stock (kept whole, reusable):</b> `+
+      unusedBins.map(b=>`${esc(b.label)} (${fmt(b.W)}×${fmt(b.H)})`).join(", ")+`</p>`;
+  }
+
+  // cut list
+  html+=`<details open><summary>📋 Cut list</summary>`;
+  html+=`<table class="cutlist"><thead><tr><th>Cut from</th><th>Piece</th><th>For area</th><th class="r">Size (${u})</th><th>Type</th></tr></thead><tbody>`;
+  let pc=0;
+  for(const b of usedBins){
+    b.placed.forEach(p=>{
+      pc++;
+      const rw=p.roomW!=null?p.roomW:p.w, rh=p.roomH!=null?p.roomH:p.h;
+      html+=`<tr><td>${esc(b.label)}</td><td>#${pc}</td><td><span class="swatch" style="background:${p.color}"></span> ${esc(p.room)}</td>`+
+        `<td class="r">${fmt(rw)} × ${fmt(rh)}${p.rotd?" ↻":""}</td>`+
+        `<td>${p.seam?'<span class="seam-flag">seam piece</span>':'whole'}</td></tr>`;
+    });
+  }
+  html+=`</tbody></table></details>`;
+
+  el.innerHTML=html;
+}
+
+function drawRoom(entry,u){
+  const it=entry.item, pieces=entry.pieces;
+  const maxW=250; const scale=maxW/Math.max(it.w,it.h,EPS); // keep rooms comparable in scale
+  const W=it.w*scale, H=it.h*scale;
+  const covered=pieces.reduce((s,p)=>s+(p.roomW*p.roomH),0);
+  const seams=pieces.length>1?pieces.length-1:0;
+  const tag = pieces.length===0 ? `<span class="seam-flag">not covered</span>`
+            : seams===0 ? `single piece` : `${seams} seam${seams>1?'s':''}`;
+  let s=`<div class="sheet"><h4>${esc(it.label)}</h4>`+
+    `<p class="meta">${fmt(it.w)} × ${fmt(it.h)} ${u} · ${tag}</p>`+
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`+
+    // base = uncovered hatch
+    `<rect x="0" y="0" width="${W}" height="${H}" fill="#ece7da"/>`;
+  for(const p of pieces){
+    const x=(p.rx||0)*scale, y=(p.ry||0)*scale, w=p.roomW*scale, h=p.roomH*scale;
+    const col=CARPET_PALETTE[p.carpetIndex%CARPET_PALETTE.length];
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${col}" fill-opacity="0.92" stroke="#fff" stroke-width="2"/>`;
+    if(w>46&&h>20){
+      s+=`<text class="piece-label" x="${x+w/2}" y="${y+h/2-1}" text-anchor="middle">${esc(stock[p.carpetIndex].name)}</text>`;
+      s+=`<text class="dim-label" x="${x+w/2}" y="${y+h/2+11}" text-anchor="middle">${fmt(p.roomW)}×${fmt(p.roomH)}</text>`;
+    }
+  }
+  s+=`<rect x="1" y="1" width="${W-2}" height="${H-2}" fill="none" stroke="#27241d" stroke-width="2"/></svg></div>`;
+  return s;
+}
+
+function drawSheet(b,util,u){
+  const maxW=300; const scale=maxW/Math.max(b.W,EPS);
+  const W=b.W*scale, H=b.H*scale;
+  let s=`<div class="sheet"><h4>${esc(b.label)}</h4>`+
+    `<p class="meta">${fmt(b.W)} × ${fmt(b.H)} ${u} · ${fmt(util)}% used${b.rot?"":" · directional"}</p>`+
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+  // free/waste areas faint
+  for(const F of b.free){
+    s+=`<rect x="${F.x*scale}" y="${F.y*scale}" width="${F.w*scale}" height="${F.h*scale}" fill="#ece7da" stroke="#ddd6c6" stroke-dasharray="3 3"/>`;
+  }
+  for(const p of b.placed){
+    const x=p.x*scale,y=p.y*scale,w=p.w*scale,h=p.h*scale;
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${p.color}" fill-opacity="${p.seam?0.7:0.9}" stroke="#fff" stroke-width="1.5"/>`;
+    if(w>40&&h>22){
+      s+=`<text class="piece-label" x="${x+w/2}" y="${y+h/2-2}" text-anchor="middle">${esc(p.room)}${p.seam?" ✂":""}</text>`;
+      const rw=p.roomW!=null?p.roomW:p.w, rh=p.roomH!=null?p.roomH:p.h;
+      s+=`<text class="dim-label" x="${x+w/2}" y="${y+h/2+11}" text-anchor="middle">${fmt(rw)}×${fmt(rh)}</text>`;
+    }
+  }
+  s+=`<rect x="0.5" y="0.5" width="${W-1}" height="${H-1}" fill="none" stroke="#b8af9c"/></svg></div>`;
+  return s;
+}
+
+document.getElementById("computeBtn").onclick=compute;
+
+/* ---------------------- init ---------------------- */
+if(!load()){
+  stock=[{name:"Carpet 1",w:"",l:"",qty:1,rot:true}];
+  needs=[{name:"Room 1",w:"",l:"",qty:1}];
+}
+renderStock();renderNeed();
+</script>
+</body>
+</html>

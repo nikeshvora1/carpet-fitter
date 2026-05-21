@@ -5,8 +5,10 @@ areas with the least waste and fewest seams. Built for [Mahavir Decor](#).
 
 ## Use it
 
-Open **`carpet-fitter.html`** in any browser (double-click — no install, works offline). Your data
-is saved in the browser between sessions.
+**Live:** https://nikeshvora1.github.io/carpet-fitter/
+
+Or open **`index.html`** locally in any browser (double-click — no install, works offline). Either
+way, your data is saved in that browser between sessions.
 
 1. **Carpets you have** — enter each roll/remnant's width × length and quantity. Untick **Rotate?**
    for directional-pile or patterned carpet that must keep its direction.
